@@ -8,13 +8,8 @@ class Phonebook extends Component {
   state = { name: '', number: '' };
 
   contactCreateList = () => {
-    const contact = {
-      id: uuidv4(),
-      name: this.state.name,
-      number: this.state.number,
-    };
-
-    const nameToCheck = contact.name.toLowerCase();
+    const nameToCheck = this.state.name.toLowerCase();
+    const { name, number } = this.state;
     const { addContact, contactBase } = this.props;
     let isExist = true;
 
@@ -25,7 +20,7 @@ class Phonebook extends Component {
       }
     });
     if (isExist) {
-      addContact(contact);
+      addContact(name, number);
     }
   };
 
@@ -35,15 +30,11 @@ class Phonebook extends Component {
     this.resetForm();
   };
 
-  addStatePropery = (name, value) => {
+  handleInputChange = e => {
+    const { name, value } = e.currentTarget;
     this.setState({
       [name]: value,
     });
-  };
-
-  handleInputChange = e => {
-    const { name, value } = e.currentTarget;
-    this.addStatePropery(name, value);
   };
 
   resetForm = () => {
@@ -94,72 +85,11 @@ class Phonebook extends Component {
   }
 }
 const mapStateToProps = state => ({
-  contactBase: state.contact,
+  contactBase: state.contact.contacts,
 });
 
 const mapDispatchToProps = dispatch => ({
-  addContact: contact => dispatch(todos),
+  addContact: (name, value) => dispatch(contactActions.addContact(name, value)),
 });
 
-export default connect()(Phonebook);
-
-/* const Phonebook = ({
-  nameAdd,
-  addContact,
-  resetForm,
-  contactName,
-  phoneNumber,
-  title,
-}) => {
-  const contactAdd = event => {
-    event.preventDefault();
-    addContact();
-    resetForm();
-  };
-
-  const handleInputChange = e => {
-    const { name, value } = e.currentTarget;
-    nameAdd(name, value);
-  };
-
-  const nameInputId = uuidv4();
-  const phoneInputId = uuidv4();
-
-  return (
-    <div>
-      <form onSubmit={contactAdd}>
-        <label htmlFor={nameInputId}>
-          Name
-          <input
-            type="text"
-            name="name"
-            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-            title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
-            required
-            onChange={handleInputChange}
-            value={contactName}
-            id={nameInputId}
-          />
-        </label>
-
-        <label htmlFor="phoneInputId">
-          number
-          <input
-            type="tel"
-            name="number"
-            pattern="(\+?( |-|\.)?\d{1,2}( |-|\.)?)?(\(?\d{3}\)?|\d{3})( |-|\.)?(\d{3}( |-|\.)?\d{4})"
-            title="Номер телефона должен состоять из 11-12 цифр и может содержать цифры, пробелы, тире, пузатые скобки и может начинаться с +"
-            required
-            onChange={handleInputChange}
-            value={phoneNumber}
-            id={phoneInputId}
-          />
-        </label>
-        <button type="submit">Add contact</button>
-      </form>
-    </div>
-  );
-};
-
-export default Phonebook;
- */
+export default connect(mapStateToProps, mapDispatchToProps)(Phonebook);
